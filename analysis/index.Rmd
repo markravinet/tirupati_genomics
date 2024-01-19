@@ -1,5 +1,5 @@
 ---
-title: "Home"
+title: "Tirupati Genomics Workshop January 2024"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
@@ -8,4 +8,9 @@ editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+A quick intro to the Genomics Workshop held in Tirupati, 29th-31st January 2024.
+
+Throughout the workshop, we will be carrying out the following analyses:
+
+1. [Learning how to handle raw reads from high-throughput sequence data](1_handling_raw_reads.html)
+2. [Filtering high-throughput sequence reads](2_fastp_filtering_reads.html)

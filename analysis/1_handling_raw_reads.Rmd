@@ -1,0 +1,91 @@
+---
+title: "Handling raw reads"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+---
+
+### fastq format
+
+Let's have a look at the first sequence from our raw read files which are stored in the [fastq format](https://en.wikipedia.org/wiki/FASTQ_format). As we saw in the [lecture](https://github.com/speciationgenomics/presentations/blob/master/NGS_introduction_Dec2020.pdf), each DNA sequence is composed of four lines. Therefore, we need to visualize the first four lines to have a look at the information stored for the first sequence.
+
+First we set the name of the fastq file that we will work with as the variable `READ`. Then, we copy that file to our directory. Finally, we will examine the first 4 lines. However, we cannot just directly write `head -4 $READ` like we might with a normal text file because the fastq file is actually compressed. It is thus a binary file which cannot just be read. Luckily, there are many commands that can directly read binary files. Instead of `cat`, which we saw in the [Unix introduction](https://speciationgenomics.github.io/getting_used_to_unix/), we use `zcat`, instead of `grep`, we use `zgrep`. If we want to use any other command, we need to read the file with `zcat` and then pipe the output into our command of choice such as `head` or `tail`.
+
+```shell
+
+# First, we will make a folder to work in
+mkdir fastqc
+cd fastqc
+
+# Now let's specify READ as the name of the file containing the forward reads
+READ=/home/data/reads/PDOM2023IND0001J_30707403185-HS1_S178_L002_R1_001.fastq.gz
+cp $READ ./
+
+# Let's have a look at the first read:
+zcat $READ | head -4
+```
+
+These are the four lines which make up the information for each read. You can learn more about what they each mean [here](https://en.wikipedia.org/wiki/FASTQ_format). Now the file is in our directory and readable, let's count the number of lines:
+
+```shell
+zcat $READ | wc -l
+```
+
+The number of sequences is thus this number divided by 4, or we can count the number of lines starting with the header
+
+```shell
+zgrep "@A00" $READ -c
+```
+
+We might think that we could have just counted the number of `@` - i.e. the first symbols for each header.
+
+```shell
+zgrep "@" $READ -c
+```
+
+However, we see that this does not always give us the same number. The reason is that `@` is also used as a symbol for encoding [quality scores](https://en.wikipedia.org/wiki/Phred_quality_score) and thus some quality score lines were also counted.
+
+### Assessing read quality with fastqc
+
+To assess the read quality, we use `fastqc` which is extremely easy to run and can be run with the name of the fastq file as the only argument. It can aslo handle gzipped files.
+
+To get help on `fastqc`:
+
+```shell
+fastqc -h | less
+```
+
+Let's run `fastqc` on our read subsets:
+
+```shell
+fastqc $READ
+```
+
+We should now also run fastqc on the file or reverse reads. As we do not need copies of these files in all of your personal directories, we will just write the file names with the paths.
+
+`fastqc` allows an output directory with the `-o` flag. We will thus just work in our home directories and run `fastqc` giving the file name with its path and specifying the output folder as the current directory (i.e. `-o ./`).
+
+```shell
+# Reverse reads
+READ=/home/data/reads/PDOM2023IND0001J_30707403185-HS1_S178_L002_R2_001.fastq.gz
+fastqc -o ./ $READ
+```
+
+So far, we have been working on test data for ease and simplicity. Let's take a look at some real data generated from a full dataset. 
+
+```shell
+cp /home/data/fastqc/ADD REAL DATA
+```
+
+Now, we need to download the html files to the local computer for visualization. To download files, we will use the command `scp` on your local machine, so in a terminal that is not connected to the Amazon server. This command will download all html files in the folder fastqc on the Amazon server to the directory you are currently located "./".
+
+```shell
+scp -i user1.pem user1@<IP address>:/home/user1/fastqc/*html ./
+
+```
+
+Here some [slides](https://github.com/speciationgenomics/presentations/blob/master/fastqc_interpretation.pdf) on interpreting fastqc html output.
+
