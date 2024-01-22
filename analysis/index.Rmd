@@ -14,3 +14,5 @@ Throughout the workshop, we will be carrying out the following analyses:
 
 1. [Learning how to handle raw reads from high-throughput sequence data](1_handling_raw_reads.html)
 2. [Filtering high-throughput sequence reads](2_fastp_filtering_reads.html)
+3. [Mapping to a reference genome](3_mapping_to_a_reference_genome.html)
+4. [Performing variant calling](4_variant_calling.html)
